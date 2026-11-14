@@ -1,9 +1,9 @@
 <!doctype html><html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>🍿 Filmy do obejrzenia</title>
+<title>Filmy do obejrzenia</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:-apple-system,Segoe UI,Roboto,sans-serif;background:#0d0f14;color:#eef0f4}
 header{padding:40px 24px 16px;max-width:1200px;margin:auto}h1{margin:0;font-size:36px}header p{color:#9aa3b2;margin:8px 0 0}
-.stats{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap}.stat{background:#171a22;border-radius:14px;padding:12px 18px}.stat b{font-size:22px;display:block}.stat span{color:#9aa3b2;font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}.stat{background:#171a22;border-radius:14px;padding:12px 18px;min-width:0}.stat b{font-size:22px;display:block}.stat span{color:#9aa3b2;font-size:13px;overflow-wrap:anywhere}
 main{max-width:1200px;margin:auto;padding:16px 24px 60px;display:grid;grid-template-columns:repeat(auto-fill,minmax(520px,1fr));gap:24px}
 .card{background:#171a22;border:2px solid #262b36;border-radius:20px;overflow:hidden;transition:all .3s}
 .card.w{border-color:#22c55e;background:linear-gradient(180deg,#123222,#171a22 60%)}.card.r{border-color:#f59e0b;background:linear-gradient(180deg,#3a2a0e,#171a22 60%)}
@@ -15,9 +15,9 @@ main{max-width:1200px;margin:auto;padding:16px 24px 60px;display:grid;grid-templ
 .btns{display:flex;gap:8px;padding:16px 20px 20px;flex-wrap:wrap}button,.link{border:1px solid #333a48;background:#1f2430;color:#eef0f4;border-radius:999px;padding:9px 16px;font-size:14px;cursor:pointer;text-decoration:none}
 button:hover,.link:hover{background:#2a3040}button.on.bw{background:#22c55e;color:#04210f;border-color:#22c55e}button.on.br{background:#f59e0b;color:#2b1a00;border-color:#f59e0b}
 .link{margin-left:auto}#rej{max-width:1200px;margin:auto;padding:0 24px 40px}#rej button{margin:4px}
-@media(max-width:600px){main{grid-template-columns:1fr}.top{flex-direction:column}.top img{width:100%}}
+@media(max-width:600px){main{grid-template-columns:1fr}.top{flex-direction:column}.top img{width:100%}.stat{padding:10px 8px}.stat b{font-size:18px}.stat span{font-size:11px;line-height:1.25}}
 </style></head><body>
-<header><h1>🍿 Filmy do obejrzenia</h1><p>Lista Tomasza. Oznacz film jako do obejrzenia, do rozważenia albo go odrzuć. Wybory zapisują się w tej przeglądarce.</p><div class="stats" id="stats"></div></header>
+<header><h1>Filmy do obejrzenia</h1><p>Lista Tomasza. Oznacz film jako do obejrzenia, do rozważenia albo go odrzuć. Wybory zapisują się w tej przeglądarce.</p><div class="stats" id="stats"></div></header>
 <main id="list"></main><div id="rej"></div>
 <script>
 let films=[];const K="koko-filmy";let m=JSON.parse(localStorage.getItem(K)||"{}");
