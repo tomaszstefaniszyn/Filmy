@@ -823,5 +823,118 @@
     "url": "https://www.filmweb.pl/film/Strażnicy+Galaktyki:+Volume+3-2023-806077",
     "yt": "u3V5KDHRQvk",
     "img": "posters/straznicy-galaktyki-vol-3.jpg"
+  },
+  {
+    "t": "Prestiż",
+    "o": "The Prestige",
+    "g": "Sci-fi · thriller",
+    "y": "2006",
+    "l": "2 h 10 min",
+    "w": "Netflix",
+    "a": "Dwóch iluzjonistów zamienia zawodową rywalizację w wojnę o sekret jednej sztuczki.",
+    "fw": "8,1",
+    "imdb": "8,5",
+    "rt": "77%",
+    "url": "https://www.filmweb.pl/film/Prestiż-2006-259945",
+    "yt": "RLtaA9fFNXU",
+    "img": "posters/prestiz.jpg",
+    "rec": {
+      "based_on": [
+        "Incepcja",
+        "Mroczny Rycerz",
+        "Interstellar"
+      ],
+      "why": "Nolan znowu składa zagadkę z obsesji i poświęcenia, bliżej „Incepcji” niż widowiska."
+    }
+  },
+  {
+    "t": "Sicario",
+    "o": "Sicario",
+    "g": "Kryminał · thriller",
+    "y": "2015",
+    "l": "2 h 1 min",
+    "w": "Prime Video",
+    "a": "Agentka FBI dołącza do operacji przeciw kartelowi i widzi, że ta wojna nie ma czystych zasad.",
+    "fw": "7,2",
+    "imdb": "7,7",
+    "rt": "91%",
+    "url": "https://www.filmweb.pl/film/Sicario-2015-713103",
+    "yt": "G8tlEcnrGnU",
+    "img": "posters/sicario.jpg",
+    "rec": {
+      "based_on": [
+        "Diuna",
+        "Diuna: Część druga",
+        "Nowy początek"
+      ],
+      "why": "Villeneuve w napięciu i moralnej szarości, tym razem na granicy, nie na Arrakis."
+    }
+  },
+  {
+    "t": "Odlot",
+    "o": "Up",
+    "g": "Animacja · familijny",
+    "y": "2009",
+    "l": "1 h 36 min",
+    "w": "Disney+",
+    "a": "Carl unosi dom balonami i leci do Ameryki Południowej, a w podróż zabiera przypadkowego ośmiolatka.",
+    "fw": "7,5",
+    "imdb": "8,3",
+    "rt": "98%",
+    "url": "https://www.filmweb.pl/film/Odlot-2009-436704",
+    "yt": "HWEW_qTLSEE",
+    "img": "posters/odlot.jpg",
+    "rec": {
+      "based_on": [
+        "W głowie się nie mieści",
+        "Co w duszy gra",
+        "WALL·E"
+      ],
+      "why": "Pete Docter, ten sam co przy „W głowie się nie mieści” i „Co w duszy gra”: animacja o stracie i tym, co zostaje."
+    }
+  },
+  {
+    "t": "Fantastyczny Pan Lis",
+    "o": "Fantastic Mr. Fox",
+    "g": "Animacja · komedia",
+    "y": "2009",
+    "l": "1 h 27 min",
+    "w": "HBO Max",
+    "a": "Pan Lis obiecuje rodzinie spokój, ale nie potrafi przestać podkradać farmerom.",
+    "fw": "7,6",
+    "imdb": "7,9",
+    "rt": "93%",
+    "url": "https://www.filmweb.pl/film/Fantastyczny+Pan+Lis-2009-156466",
+    "yt": "n2igjYFojUo",
+    "img": "posters/fantastyczny-pan-lis.jpg",
+    "rec": {
+      "based_on": [
+        "Grand Budapest Hotel"
+      ],
+      "why": "Andersonowski humor i precyzyjna forma, tym razem w stop-motion."
+    }
+  },
+  {
+    "t": "Ona",
+    "o": "Her",
+    "g": "Sci-fi · dramat",
+    "y": "2013",
+    "l": "2 h 6 min",
+    "w": "HBO Max",
+    "a": "Samotny Theodore zakochuje się w głosie systemu operacyjnego, który uczy się go coraz lepiej.",
+    "fw": "7,5",
+    "imdb": "7,9",
+    "rt": "95%",
+    "url": "https://www.filmweb.pl/film/Ona-2013-646395",
+    "yt": "dJTU48_yghs",
+    "img": "posters/ona.jpg",
+    "rec": {
+      "based_on": [
+        "Ex Machina",
+        "Co w duszy gra",
+        "WALL·E"
+      ],
+      "why": "Relacja człowieka z maszyną, łagodniejsza niż „Ex Machina” i bliższa ciepła „Co w duszy gra”."
+    }
   }
 ]
