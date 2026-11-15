@@ -9,6 +9,7 @@ main{max-width:1200px;margin:auto;padding:16px 24px 60px}#list{display:grid;grid
 .sechead{margin:0 0 18px;font-size:22px;font-weight:650;display:flex;align-items:baseline;gap:10px}.sechead b{color:#9aa3b2;font-size:16px;font-weight:600}
 .empty{margin:0;padding:28px 16px;text-align:center;color:#9aa3b2;background:#171a22;border:2px dashed #262b36;border-radius:20px}
 .finder{margin:0 0 18px}.finder label{display:block;margin-bottom:8px;color:#9aa3b2;font-size:13px}.finder input{width:100%;background:#171a22;color:#eef0f4;border:1px solid #333a48;border-radius:999px;padding:12px 16px;font:inherit;font-size:15px}.finder input:focus{outline:2px solid #3b82f6;outline-offset:2px}
+.genres{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}.genres button{min-height:36px;padding:8px 12px}.genres button b{margin-left:6px;color:#9aa3b2;font-weight:650}.genres button.on{background:#222833;border-color:#c5cad3;color:#fff}.genres button.on b{color:#eef0f4}
 .hits{display:flex;flex-direction:column;gap:8px;margin-top:12px}.hit{display:flex;gap:12px;align-items:center;background:#171a22;border:1px solid #262b36;border-radius:14px;padding:8px}.hit img,.ph{width:48px;height:72px;object-fit:cover;border-radius:8px;flex:none;background:#12151c}.ph{display:flex;align-items:center;justify-content:center}.ph.big{width:180px;height:auto;aspect-ratio:2/3;flex-direction:column;gap:8px;color:#9aa3b2}.ph.big .ico{width:42px;height:42px}.ph.big em{font-style:normal;font-size:13px}.hitinfo{min-width:0;display:flex;flex-direction:column;gap:3px}.hitinfo b{font-size:15px}.hitinfo span{color:#9aa3b2;font-size:13px;line-height:1.3}.hit button,.got{margin-left:auto;flex:none}.got{color:#9aa3b2;font-size:13px;padding-right:6px}.note{margin:12px 0 0;color:#9aa3b2;font-size:14px}
 .yts{display:flex;align-items:center;justify-content:center;margin:0 20px 4px;padding:16px;border:1px dashed #333a48;border-radius:14px;color:#eef0f4;text-decoration:none;background:#12151c}.yts:hover{background:#1c2230}.btns .rm{grid-column:1/-1}.meta a{color:#cbd2de}
 .badge.rec{background:#f5c451;color:#2b2100}.why{margin:0;font-size:14px;line-height:1.45;color:#e7d7a8}.why span{display:block;color:#9aa3b2;font-size:13px;margin-top:2px}
@@ -32,7 +33,7 @@ button:hover{background:#2a3040}button.on.bw{background:#22c55e;color:#04210f;bo
 @media(max-width:399px){.statrow{grid-template-columns:1fr 1fr}.stat.sum b{font-size:30px}}
 </style></head><body>
 <header><h1>Filmy do obejrzenia</h1><p>Lista Tomasza. Oznacz film jako do obejrzenia, do rozważenia albo go odrzuć. Wybory zapisują się w tej przeglądarce.</p><div class="stats" id="stats"></div></header>
-<main><h2 class="sechead" id="sec"></h2><div id="finder" class="finder" hidden><label for="q">Dodaj film do listy</label><input id="q" type="search" placeholder="Tytuł po polsku lub angielsku albo reżyser" autocomplete="off" enterkeyhint="search"><div id="hits" aria-live="polite"></div></div><p class="empty" id="empty" hidden>Brak filmów w tej sekcji</p><div id="list"></div></main><p id="synced" aria-live="polite"></p>
+<main><h2 class="sechead" id="sec"></h2><div id="finder" class="finder" hidden><label for="q">Dodaj film do listy</label><input id="q" type="search" placeholder="Tytuł po polsku lub angielsku albo reżyser" autocomplete="off" enterkeyhint="search"><div id="hits" aria-live="polite"></div></div><div id="genres" class="genres" role="group" aria-label="Gatunki"></div><p class="empty" id="empty" hidden>Brak filmów w tej sekcji</p><div id="list"></div></main><p id="synced" aria-live="polite"></p>
 <script>
 let films=[],base=[],custom=[];const K="koko-filmy",CK="koko-filmy-custom",OK="koko-filmy-oceny";let m=JSON.parse(localStorage.getItem(K)||"{}");
 let oceny={};try{oceny=JSON.parse(localStorage.getItem(OK)||"{}");}catch(e){oceny={};}
@@ -104,15 +105,34 @@ async function addHit(i){const h=lastHits[i];if(!h||h._adding||listed(h)){render
 function removeCustom(i){const f=films[i];if(!f||!f.custom)return;custom=custom.filter(c=>f.qid?c.qid!==f.qid:c.t!==f.t);saveCustom();if(m[f.t]){delete m[f.t];localStorage.setItem(K,JSON.stringify(m));}catalog();draw();}
 q.addEventListener("input",()=>{clearTimeout(timer);const query=q.value.trim();if(query.length<2){seq++;hits.innerHTML="";lastHits=[];return;}hits.innerHTML='<p class="note">Szukam…</p>';timer=setTimeout(()=>runSearch(query),350);});
 const onStream=f=>!!(f&&f.custom)||/Netflix|Prime Video|HBO Max|SkyShowtime|Disney\+/.test(f&&f.w||"");
+const GK="koko-filmy-gatunki";
+let genreSel={};try{genreSel=JSON.parse(localStorage.getItem(GK)||"{}");}catch(e){genreSel={};}
+if(!genreSel||typeof genreSel!=="object"||Array.isArray(genreSel))genreSel={};
+const genreKey=s=>String(s||"").trim().toLocaleLowerCase("pl");
+const genreLabel=s=>{const t=String(s||"").trim();return t?t.charAt(0).toLocaleUpperCase("pl")+t.slice(1):"";};
+function filmGenres(f){return String(f&&f.g||"").split(" · ").map(s=>s.trim()).filter(Boolean);}
+function saveGenres(){localStorage.setItem(GK,JSON.stringify(genreSel));}
+function toggleGenre(name){const id=secId();if(!name){delete genreSel[id];saveGenres();draw();return;}const cur=Array.isArray(genreSel[id])?genreSel[id].slice():[];const k=genreKey(name);const at=cur.findIndex(x=>genreKey(x)===k);if(at>=0)cur.splice(at,1);else cur.push(name);if(cur.length)genreSel[id]=cur;else delete genreSel[id];saveGenres();draw();}
+genres.addEventListener("click",e=>{const b=e.target.closest("button");if(!b||!genres.contains(b))return;toggleGenre(b.dataset.g||"");});
 function draw(){const id=secId(),cur=SECS[id],st=cur.st;
 const pool=films.filter(onStream);
 const cnt=v=>pool.filter(f=>m[f.t]===v).length,home=pool.filter(f=>!(m[f.t]||'')).length;
 const on=k=>id===k?'true':'false';
 stats.innerHTML=`<button type="button" class="stat sum" aria-pressed="${on('na-liscie')}" onclick="pick('na-liscie')"><b>${home}</b><span>Na liście</span></button><div class="statrow"><button type="button" class="stat w" aria-pressed="${on('do-obejrzenia')}" onclick="pick('do-obejrzenia')"><div class="num">${reel}<b>${cnt("w")}</b></div><span>Do obejrzenia</span></button><button type="button" class="stat r" aria-pressed="${on('do-rozwazenia')}" onclick="pick('do-rozwazenia')"><div class="num">${clap}<b>${cnt("r")}</b></div><span>Do rozważenia</span></button><button type="button" class="stat x" aria-pressed="${on('odrzucone')}" onclick="pick('odrzucone')"><div class="num">${cut}<b>${cnt("x")}</b></div><span>Odrzucone</span></button><button type="button" class="stat d" aria-pressed="${on('obejrzane')}" onclick="pick('obejrzane')"><div class="num">${ticket}<b>${cnt("d")}</b></div><span>Obejrzane</span></button></div>`;
-const shown=films.map((f,i)=>({f,i})).filter(x=>onStream(x.f)&&(m[x.f.t]||'')===st);
+const section=films.map((f,i)=>({f,i})).filter(x=>onStream(x.f)&&(m[x.f.t]||'')===st);
+const tally=new Map();
+for(const {f} of section){const seen=new Set();for(const g of filmGenres(f)){const k=genreKey(g);if(seen.has(k))continue;seen.add(k);const row=tally.get(k)||{name:genreLabel(g),n:0};row.n++;tally.set(k,row);}}
+const names=[...tally.values()].sort((a,b)=>a.name.localeCompare(b.name,"pl"));
+let picked=Array.isArray(genreSel[id])?genreSel[id].filter(g=>tally.has(genreKey(g))):[];
+if(JSON.stringify(picked)!==JSON.stringify(genreSel[id]||[])){if(picked.length)genreSel[id]=picked;else delete genreSel[id];saveGenres();}
+const pickedKeys=new Set(picked.map(genreKey));
+const shown=pickedKeys.size?section.filter(({f})=>filmGenres(f).some(g=>pickedKeys.has(genreKey(g)))):section;
 document.getElementById('sec').innerHTML=`${cur.name} <b>${shown.length}</b>`;
 finder.hidden=id!=='na-liscie';
+genres.hidden=!section.length;
+genres.innerHTML=`<button type="button" data-g="" class="${pickedKeys.size?"":"on"}" aria-pressed="${pickedKeys.size?"false":"true"}">Wszystkie <b>${section.length}</b></button>`+names.map(r=>{const on=pickedKeys.has(genreKey(r.name));return `<button type="button" data-g="${esc(r.name)}" class="${on?"on":""}" aria-pressed="${on}">${esc(r.name)} <b>${r.n}</b></button>`;}).join("");
 empty.hidden=shown.length>0;
+empty.textContent=section.length?"Brak filmów o wybranych gatunkach.":"Brak filmów w tej sekcji.";
 if(lastHits.length)renderHits();
 ensureMedia();
 list.innerHTML=shown.map(({f,i})=>{const s=m[f.t]||"";const badge=s==="w"?reel+" Obejrzę":s==="r"?clap+" Do rozważenia":s==="d"?ticket+" Obejrzane":s==="x"?cut+" Odrzucone":"";
