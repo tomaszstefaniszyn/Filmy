@@ -16,6 +16,8 @@ main{max-width:1200px;margin:auto;padding:16px 24px 60px}#list{display:grid;grid
 .stars{display:grid;grid-template-columns:repeat(10,minmax(32px,1fr));gap:6px}.stars button{min-width:32px;min-height:36px;padding:4px 0 3px;border-radius:10px;background:#12151c;border:1px solid #3a3424;color:#8a8172;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;line-height:1;font-size:15px}.stars button .n{font-size:10px;font-variant-numeric:tabular-nums}.stars button.on{background:#3a2e12;border-color:#f5c451;color:#f5c451}.stars button:hover{background:#2a2416}
 #synced{position:fixed;right:12px;bottom:12px;margin:0;background:#171a22;color:#9aa3b2;border:1px solid #262b36;border-radius:999px;padding:6px 10px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .3s}#synced.on{opacity:1}
 @media(max-width:520px){.stars{grid-template-columns:repeat(5,minmax(32px,1fr))}.stars button{min-height:40px}}
+.ask{margin:0 20px 20px;padding:14px 14px 12px;background:#12151c;border:1px solid #3a3424;border-radius:16px}.ask h3{margin:0 0 4px;font-size:16px;font-weight:650;text-align:center}.ask .askt{margin:0 0 12px;text-align:center;color:#9aa3b2;font-size:13px}.ask .askx{display:flex;width:100%;margin-top:12px;justify-content:center;background:transparent;color:#9aa3b2}.ask .askx:hover{background:#1c2230;color:#eef0f4}.askback{display:none}
+@media(max-width:600px){.askback{display:block;position:fixed;inset:0;background:rgba(8,10,14,.62);z-index:30}.ask{position:fixed;left:12px;right:12px;bottom:12px;z-index:31;margin:0;box-shadow:0 18px 50px rgba(0,0,0,.6)}}
 .card{background:#171a22;border:2px solid #262b36;border-radius:20px;overflow:hidden;transition:all .3s}
 .card.w{border-color:#22c55e;background:linear-gradient(180deg,#123222,#171a22 60%)}.card.r{border-color:#f59e0b;background:linear-gradient(180deg,#3a2a0e,#171a22 60%)}.card.d{border-color:#3b82f6;background:linear-gradient(180deg,#12243f,#171a22 60%)}.card.x{border-color:#f87171;background:linear-gradient(180deg,#3a1616,#171a22 60%)}
 .top{display:flex;gap:20px;padding:20px}.top img{width:180px;aspect-ratio:2/3;object-fit:cover;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.6);flex-shrink:0}
@@ -45,9 +47,15 @@ const cut='<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.2"
 const SECS={'na-liscie':{st:'',name:'Na liście'},'do-obejrzenia':{st:'w',name:'Do obejrzenia'},'do-rozwazenia':{st:'r',name:'Do rozważenia'},'odrzucone':{st:'x',name:'Odrzucone'},'obejrzane':{st:'d',name:'Obejrzane'}};
 const secId=()=>SECS[location.hash.slice(1)]?location.hash.slice(1):'na-liscie';
 const pick=id=>{location.hash=id};
-const set=(i,v)=>{const t=films[i].t;m[t]=m[t]===v?"":v;localStorage.setItem(K,JSON.stringify(m));markChanged();draw()};
+const set=(i,v)=>{const t=films[i].t;m[t]=m[t]===v?"":v;localStorage.setItem(K,JSON.stringify(m));ask=null;askFocus=false;markChanged();draw()};
 const fid=f=>{if(!f)return "";if(f.qid)return f.qid;const im=(String(f.imdbUrl||"").match(/tt\d+/)||String(f.imdb||"").match(/^tt\d+$/)||[])[0];if(im)return im;const fw=String(f.url||"").match(/-(\d+)$/);if(fw)return "fw:"+fw[1];return "t:"+(f.t||"")+"|"+(f.y||"");};
 function rate(i,n){const id=fid(films[i]);if(!id)return;if(oceny[id]===n)delete oceny[id];else oceny[id]=n;localStorage.setItem(OK,JSON.stringify(oceny));markChanged();draw();}
+let ask=null,askFocus=false;
+function starBtns(i,mark,mode){return Array.from({length:10},(_,k)=>{const n=k+1;const act=mode==="ask"?`confirmWatch(${i},${n})`:`rate(${i},${n})`;return `<button type="button" class="star${Number.isInteger(mark)&&mark>=n?" on":""}" aria-label="Ocena ${n}" aria-pressed="${mark===n}" onclick="${act}"><span aria-hidden="true">★</span><span class="n">${n}</span></button>`;}).join("");}
+function askWatch(i){ask=ask===i?null:i;askFocus=ask!==null;draw();}
+function cancelAsk(){ask=null;askFocus=false;draw();}
+function confirmWatch(i,n){const f=films[i];if(!f||n<1||n>10)return;const id=fid(f);if(!id)return;oceny[id]=n;localStorage.setItem(OK,JSON.stringify(oceny));m[f.t]="d";localStorage.setItem(K,JSON.stringify(m));ask=null;askFocus=false;markChanged();draw();}
+addEventListener("keydown",e=>{if(e.key==="Escape"&&ask!==null)cancelAsk();});
 function validRec(rec){return !!rec&&typeof rec==="object"&&Array.isArray(rec.based_on)&&rec.based_on.length>0&&rec.based_on.every(x=>typeof x==="string"&&x.trim())&&typeof rec.why==="string"&&!!rec.why.trim();}
 const NTFY="https://ntfy.sh/koko-filmy-527998526e3aab3a6ce279ed",TSK="koko-filmy-ts";
 let syncTimer=null;
@@ -58,7 +66,7 @@ function splitSnap(snap){const whole=JSON.stringify(snap);if(whole.length<=4000)
 async function postSnapshot(){try{const bodies=splitSnap(buildSnap());for(const body of bodies){const r=await fetch(NTFY,{method:"POST",body});if(!r.ok)return;}showSynced();}catch(e){}}
 function localEmpty(){const st=Object.values(m).some(v=>v==="w"||v==="r"||v==="d"||v==="x");return !st&&Object.keys(oceny).length===0&&custom.length===0;}
 function mergeStan(stan){if(!stan||stan.v!==1)return;const remote=stan.ts||"";const localT=localStorage.getItem(TSK)||"";if(!localEmpty()&&!(remote&&(!localT||remote>localT)))return;if(localEmpty()&&!remote&&!Object.keys(stan.ratings||{}).length&&!Object.keys(stan.status||{}).length&&!(stan.custom||[]).length)return;oceny=stan.ratings&&typeof stan.ratings==="object"?stan.ratings:{};custom=(stan.custom||[]).map(c=>({t:c.t||"",o:c.o||c.t||"",y:c.y||"",director:c.dir||"",qid:c.wd||"",img:c.img||"",yt:c.yt||"",g:"",l:"",w:"",a:"",fw:"",imdb:"",rt:"",url:"",custom:true}));catalog();const st=stan.status||{};m={};for(const f of films){const s=st[fid(f)];if(s==="w"||s==="r"||s==="d"||s==="x")m[f.t]=s;}localStorage.setItem(K,JSON.stringify(m));localStorage.setItem(OK,JSON.stringify(oceny));saveCustom({silent:true});if(remote)localStorage.setItem(TSK,remote);}
-addEventListener('hashchange',()=>draw());
+addEventListener('hashchange',()=>{ask=null;askFocus=false;draw();});
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const norm=s=>(s||"").trim().toLowerCase();
 const FILM=new Set(["Q11424","Q24869","Q202866","Q226730","Q506240","Q29168811","Q20650540","Q336144","Q21010853"]);
@@ -107,7 +115,7 @@ if(lastHits.length)renderHits();
 ensureMedia();
 list.innerHTML=shown.map(({f,i})=>{const s=m[f.t]||"";const badge=s==="w"?reel+" Obejrzę":s==="r"?clap+" Do rozważenia":s==="d"?ticket+" Obejrzane":s==="x"?cut+" Odrzucone":"";
 const rec=id==='na-liscie'&&validRec(f.rec)?`<span class="badge rec">★ Z Twojej rekomendacji</span><p class="why">${esc(f.rec.why)}<span>Na podstawie: ${esc(f.rec.based_on.join(", "))}</span></p>`:"";
-const mark=oceny[fid(f)];const stars=id==='obejrzane'?`<div class="rate">${Number.isInteger(mark)?`<p class="score">${mark}/10</p>`:""}<div class="stars" role="group" aria-label="Ocena 1 do 10">${Array.from({length:10},(_,k)=>{const n=k+1;return `<button type="button" class="star${Number.isInteger(mark)&&mark>=n?" on":""}" aria-label="Ocena ${n}" aria-pressed="${mark===n}" onclick="rate(${i},${n})"><span aria-hidden="true">★</span><span class="n">${n}</span></button>`;}).join("")}</div></div>`:"";
+const mark=oceny[fid(f)];const asking=ask===i&&id!=='obejrzane';const stars=id==='obejrzane'?`<div class="rate">${Number.isInteger(mark)?`<p class="score">${mark}/10</p>`:""}<div class="stars" role="group" aria-label="Ocena 1 do 10">${starBtns(i,mark,"rate")}</div></div>`:"";const picker=asking?`<div class="askback" onclick="cancelAsk()"></div><div class="ask" role="region" aria-label="Jak oceniasz ten film?" tabindex="-1"><h3>Jak oceniasz ten film?</h3><p class="askt">${esc(f.t)}</p><div class="stars" role="group" aria-label="Ocena 1 do 10">${starBtns(i,mark,"ask")}</div><button type="button" class="askx" onclick="cancelAsk()">Anuluj</button></div>`:"";
 const bits=[];if(f.o&&f.o!==f.t)bits.push(f.o);if(f.y)bits.push(f.y);if(f.l)bits.push(f.l);if(f.g)bits.push(f.g);if(f.director)bits.push("reż. "+f.director);
 const pills=[f.fw&&`<span class="pill"><i>Filmweb</i> <b>${esc(f.fw)}</b></span>`,f.imdb&&!String(f.imdb).startsWith("http")&&`<span class="pill"><i>IMDb</i> <b>${esc(f.imdb)}</b></span>`,f.rt&&`<span class="pill"><i>RT</i> <b>${esc(f.rt)}</b></span>`].filter(Boolean).join("");
 const poster=f.img?`<img src="${esc(f.img)}" alt="Plakat ${esc(f.t)}">`:`<span class="ph big">${reel}<em>Brak plakatu</em></span>`;
@@ -120,6 +128,7 @@ ${f.a?`<div class="about">${esc(f.a)}</div>`:""}${pills?`<div class="pills">${pi
 ${f.w?`<div class="meta">📺 ${esc(f.w)}</div>`:""}${links?`<div class="meta">${links}</div>`:""}</div></div>
 ${stars}
 ${video}
-<div class="btns"><button class="bw ${s==="w"?"on":""}" onclick="set(${i},'w')">${reel} Obejrzę</button><button class="br ${s==="r"?"on":""}" onclick="set(${i},'r')">${clap} Do rozważenia</button><button class="bd ${s==="d"?"on":""}" onclick="set(${i},'d')">${ticket} Obejrzane</button><button class="bx ${s==="x"?"on":""}" onclick="set(${i},'x')">${cut} Odrzuć</button>${rm}</div></div>`;}).join("");}
+<div class="btns"><button class="bw ${s==="w"?"on":""}" onclick="set(${i},'w')">${reel} Obejrzę</button><button class="br ${s==="r"?"on":""}" onclick="set(${i},'r')">${clap} Do rozważenia</button><button class="bd ${s==="d"||asking?"on":""}" aria-expanded="${asking?"true":"false"}" onclick="${id==='obejrzane'?`set(${i},'d')`:`askWatch(${i})`}">${ticket} Obejrzane</button><button class="bx ${s==="x"?"on":""}" onclick="set(${i},'x')">${cut} Odrzuć</button>${rm}</div>${picker}</div>`;}).join("");
+const box=document.querySelector(".ask");if(box){if(!matchMedia("(max-width:600px)").matches)box.scrollIntoView({block:"nearest"});if(askFocus){box.focus({preventScroll:true});askFocus=false;}}}
 fetch('films.json',{cache:'no-store'}).then(r=>r.json()).then(d=>{base=d;return fetch('data/stan.json',{cache:'no-store'}).then(s=>s.ok?s.json():null).catch(()=>null);}).then(stan=>{if(stan)mergeStan(stan);catalog();draw();postSnapshot();}).catch(()=>{catalog();draw();postSnapshot();});
 </script></body></html>
