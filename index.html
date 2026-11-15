@@ -103,11 +103,13 @@ async function runSearch(q){const my=++seq;try{const [pl,en]=await Promise.all([
 async function addHit(i){const h=lastHits[i];if(!h||h._adding||listed(h)){renderHits();return;}h._adding=true;renderHits();try{if(!h.img)h.img=await findPoster(h)||"";if(!h.yt)h.yt=await findTrailer(h)||"";}catch(e){}if(listed(h)){h._adding=false;renderHits();return;}custom.push(h);saveCustom();catalog();draw();}
 function removeCustom(i){const f=films[i];if(!f||!f.custom)return;custom=custom.filter(c=>f.qid?c.qid!==f.qid:c.t!==f.t);saveCustom();if(m[f.t]){delete m[f.t];localStorage.setItem(K,JSON.stringify(m));}catalog();draw();}
 q.addEventListener("input",()=>{clearTimeout(timer);const query=q.value.trim();if(query.length<2){seq++;hits.innerHTML="";lastHits=[];return;}hits.innerHTML='<p class="note">Szukam…</p>';timer=setTimeout(()=>runSearch(query),350);});
+const onStream=f=>!!(f&&f.custom)||/Netflix|Prime Video|HBO Max|SkyShowtime|Disney\+/.test(f&&f.w||"");
 function draw(){const id=secId(),cur=SECS[id],st=cur.st;
-const cnt=v=>films.filter(f=>m[f.t]===v).length,home=films.filter(f=>!(m[f.t]||'')).length;
+const pool=films.filter(onStream);
+const cnt=v=>pool.filter(f=>m[f.t]===v).length,home=pool.filter(f=>!(m[f.t]||'')).length;
 const on=k=>id===k?'true':'false';
 stats.innerHTML=`<button type="button" class="stat sum" aria-pressed="${on('na-liscie')}" onclick="pick('na-liscie')"><b>${home}</b><span>Na liście</span></button><div class="statrow"><button type="button" class="stat w" aria-pressed="${on('do-obejrzenia')}" onclick="pick('do-obejrzenia')"><div class="num">${reel}<b>${cnt("w")}</b></div><span>Do obejrzenia</span></button><button type="button" class="stat r" aria-pressed="${on('do-rozwazenia')}" onclick="pick('do-rozwazenia')"><div class="num">${clap}<b>${cnt("r")}</b></div><span>Do rozważenia</span></button><button type="button" class="stat x" aria-pressed="${on('odrzucone')}" onclick="pick('odrzucone')"><div class="num">${cut}<b>${cnt("x")}</b></div><span>Odrzucone</span></button><button type="button" class="stat d" aria-pressed="${on('obejrzane')}" onclick="pick('obejrzane')"><div class="num">${ticket}<b>${cnt("d")}</b></div><span>Obejrzane</span></button></div>`;
-const shown=films.map((f,i)=>({f,i})).filter(x=>(m[x.f.t]||'')===st);
+const shown=films.map((f,i)=>({f,i})).filter(x=>onStream(x.f)&&(m[x.f.t]||'')===st);
 document.getElementById('sec').innerHTML=`${cur.name} <b>${shown.length}</b>`;
 finder.hidden=id!=='na-liscie';
 empty.hidden=shown.length>0;
