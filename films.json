@@ -1281,5 +1281,53 @@
     "url": "https://www.filmweb.pl/film/Wolny+strzelec-2014-687674",
     "yt": "5pJf22YpfZU",
     "img": "posters/wolny-strzelec.jpg"
+  },
+  {
+    "t": "Batman - Początek",
+    "o": "Batman Begins",
+    "g": "Akcja · sci-fi",
+    "y": "2005",
+    "l": "2 h 20 min",
+    "w": "HBO Max",
+    "a": "Bruce Wayne wraca do Gotham po latach treningu i jako Batman staje przeciw korupcji oraz Strachowi na Wróble.",
+    "fw": "7,6",
+    "imdb": "8,2",
+    "rt": "85%",
+    "url": "https://www.filmweb.pl/film/Batman+Początek-2005-106376",
+    "yt": "neY2xVmOfUM",
+    "img": "posters/batman-poczatek.jpg",
+    "rec": {
+      "based_on": [
+        "Mroczny Rycerz",
+        "Batman",
+        "Incepcja",
+        "Interstellar"
+      ],
+      "why": "Mroczny Rycerz i The Batman dostały od Ciebie 9/10, a filmy Nolana to Twoje top – to początek jego trylogii: mroczny, realistyczny Batman z kryminalnym klimatem."
+    }
+  },
+  {
+    "t": "Dziewczyna z tatuażem",
+    "o": "The Girl with the Dragon Tattoo",
+    "g": "Kryminał · thriller",
+    "y": "2011",
+    "l": "2 h 38 min",
+    "w": "Prime Video",
+    "a": "Dziennikarz Mikael Blomkvist i hakerka Lisbeth Salander badają zaginięcie Harriet Vanger sprzed czterdziestu lat.",
+    "fw": "7,7",
+    "imdb": "7,8",
+    "rt": "86%",
+    "url": "https://www.filmweb.pl/film/Dziewczyna+z+tatuażem-2011-565637",
+    "yt": "DqQe3OrsMKI",
+    "img": "posters/dziewczyna-z-tatuazem.jpg",
+    "rec": {
+      "based_on": [
+        "Siedem",
+        "Podziemny krąg",
+        "Zodiak",
+        "Zaginiona dziewczyna"
+      ],
+      "why": "Siedem i Podziemny krąg oceniłeś na 9/10 – to kolejny mroczny thriller Davida Finchera o śledztwie w sprawie seryjnego mordercy."
+    }
   }
 ]
